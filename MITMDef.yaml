@@ -1,0 +1,22 @@
+---
+- name: Defend against MITM Attack
+  hosts: defender1              #node2 will start the defense
+  become: yes
+  tasks:
+    - name: Install necessary tools
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - arpwatch      #tool for monitoring network activity and keeps an eye out on ARP
+        - iptables      #tool for setting up, maintaining and inspecting the tables of IP packet filter rules.
+
+    - name: Start arpwatch
+      service:
+        name: arpwatch
+        state: started
+        enabled: yes
+
+    - name: Add iptables rule to block MITM attack
+      command: iptables -A INPUT -s {{['attacker1']['ansible_host']}} -j DROP
+        #this command will block all incoming traffic from the specified IP address.
