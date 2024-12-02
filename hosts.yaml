@@ -1,0 +1,12 @@
+all:
+  children:
+    attacker:
+      hosts:
+        attacker1:
+          ansible_host: 172.31.19.199
+          ansible_user: ansibledevops
+    defender:
+      hosts:
+        defender1:
+          ansible_host: 172.31.25.25
+          ansible_user: ansibledevops
