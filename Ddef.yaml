@@ -1,0 +1,18 @@
+---
+- name: Defend Against Flood Attack
+  hosts: defender1        #node2 defending from node1
+  become: yes
+  tasks:
+    - name: Install UFW     #Uncomplicated Firewall, its a user-friendly interface for managing firewall rules.
+      dnf:
+        name: ufw
+        state: present
+
+    - name: Allow SSH       #Allows SSH connections to port 22
+      command: ufw allow 22
+
+    - name: Deny Flood Attack #blocks incoming traffic on port 80
+      command: ufw deny 80
+
+    - name: Enable UFW      #enables UFW firewall
+      command: ufw enable
