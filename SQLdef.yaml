@@ -1,0 +1,31 @@
+---
+- name: Defend against SQL Injection Attack
+  hosts: defender1        #node2 starts defending
+  become: yes
+  tasks:
+    - name: Install necessary tools
+      yum:
+        name: mod_security    #a web application firewall module that monitors and logs HTTP traffic
+        state: present
+
+    - name: Enable ModSecurity
+      command: |
+        sudo a2enmod security2
+        sudo systemctl restart httpd
+
+    - name: Configure ModSecurity     #this masically enables the engine, allowing processing, inspection of the request and response, and detects/prevents data leakage
+      copy:
+        content: |
+          SecRuleEngine On
+          SecRequestBodyAccess On
+          SecResponseBodyAccess On
+          SecRule ARGS "@rx select.*from" "id:1234,deny,status:403,msg:'SQL Injection Detected'"
+        dest: /etc/httpd/conf.d/mod_security.conf
+      notify:
+        - Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
